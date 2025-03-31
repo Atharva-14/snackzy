@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/card";
 import {
   ChartLine,
+  ChevronsUp,
+  ChevronUp,
   CircleCheck,
   Clock,
   IndianRupee,
@@ -37,6 +39,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import clsx from "clsx";
 
 ChartJS.register(
   CategoryScale,
@@ -83,7 +86,7 @@ const orders = [
     orderID: "#ORD-002",
     customer: "Atharva Muratkar",
     totalAmount: "₹150.00",
-    status: "Completed",
+    status: "Delivered",
   },
   {
     orderID: "#ORD-003",
@@ -101,7 +104,7 @@ const orders = [
     orderID: "#ORD-005",
     customer: "Vedant Shelke",
     totalAmount: "₹550.00",
-    status: "Completed",
+    status: "Delivered",
   },
   {
     orderID: "#ORD-006",
@@ -122,7 +125,7 @@ const topSellingProducts = [
     productName: "Kurkure",
     sold: "115",
     revenue: "₹2500.00",
-    status: "In Stock",
+    status: "Low Stock",
   },
   {
     productName: "Lays",
@@ -240,73 +243,85 @@ const Page = () => {
       <div className="grid auto-rows-min gap-4 md:grid-cols-4">
         {/* Total Sales */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-4">
             <CardTitle className="flex space-between items-center">
               <h1 className="w-full text-gray-500 text-xl">Total Sales</h1>
-              <ChartLine className="w-6 h-6" />
+              <p className="bg-emerald-100 px-1 py-2 rounded-md">
+                <ChartLine className="w-6 h-6 text-emerald-600" />
+              </p>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-4">
             <span className="flex items-center">
               <IndianRupee className="w-6 h-6" />
               <p className="text-2xl text-center font-semibold">12,345</p>
             </span>
           </CardContent>
           <CardFooter>
-            <p className="text-gray-400 text-base font-medium">
-              +12% from last month
+            <p className="flex text-base font-medium text-emerald-600">
+              <ChevronsUp />
+              12% from last month
             </p>
           </CardFooter>
         </Card>
 
         {/* Pending Orders */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-4">
             <CardTitle className="flex space-between items-center">
               <h1 className="w-full text-gray-500 text-xl">Pending Orders</h1>
-              <Clock className="w-6 h-6" />
+              <p className="bg-orange-100 px-1 py-2 rounded-md">
+                <Clock className="w-6 h-6 text-orange-600" />
+              </p>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold">18</p>
+          <CardContent className="pb-4">
+            <p className="text-2xl font-semibold">48</p>
           </CardContent>
           <CardFooter>
-            <p className="text-gray-400 text-base font-medium">
-              4 require attention
+            <p className="flex text-orange-600 text-base font-medium">
+              <ChevronsUp /> 8 new orders today
             </p>
           </CardFooter>
         </Card>
 
         {/* Completed Orders */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-4">
             <CardTitle className="flex space-between items-center">
               <h1 className="w-full text-gray-500 text-xl">Completed Orders</h1>
-              <CircleCheck className="w-6 h-6" />
+              <p className="bg-blue-100 px-1 py-2 rounded-md">
+                <CircleCheck className="w-6 h-6 text-blue-600" />
+              </p>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-4">
             <p className="text-2xl font-semibold">280</p>
           </CardContent>
           <CardFooter>
-            <p className="text-gray-400 text-base font-medium">This month</p>
+            <p className="flex text-blue-600 text-base font-medium">
+              <ChevronsUp />
+              24 this week
+            </p>
           </CardFooter>
         </Card>
 
         {/* Expiry Alerts */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-4">
             <CardTitle className="flex space-between items-center">
               <h1 className="w-full text-gray-500 text-xl">Expiry Alerts</h1>
-              <TriangleAlert className="w-6 h-6" />
+              <p className="bg-red-100 px-1 py-2 rounded-md">
+                <TriangleAlert className="w-6 h-6 text-red-600" />
+              </p>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-4">
             <p className="text-2xl font-semibold">5</p>
           </CardContent>
           <CardFooter>
-            <p className="text-gray-400 text-base font-medium">
-              Product expiring soon
+            <p className="flex text-red-600 text-base font-medium">
+              <ChevronsUp />5 items expiring soon
             </p>
           </CardFooter>
         </Card>
@@ -339,7 +354,7 @@ const Page = () => {
       <div className="grid auto-rows-min gap-4 md:grid-cols-2">
         {/* Recent Orders */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-4">
             <CardTitle className="flex space-between items-center">
               <h1 className="w-full text-xl">Recent Orders</h1>
               <Link
@@ -368,7 +383,19 @@ const Page = () => {
                       {order.orderID}
                     </TableCell>
                     <TableCell>{order.customer}</TableCell>
-                    <TableCell>{order.status}</TableCell>
+                    <TableCell
+                      className={
+                        order.status === "Pending"
+                          ? "text-orange-600 bg-orange-100"
+                          : order.status === "Shipping"
+                          ? "text-blue-600 bg-blue-100"
+                          : order.status === "Delivered"
+                          ? "text-green-600 bg-green-100"
+                          : "text-red-600 bg-red-100"
+                      }
+                    >
+                      {order.status}
+                    </TableCell>
                     <TableCell className="text-right">
                       {order.totalAmount}
                     </TableCell>
@@ -405,7 +432,18 @@ const Page = () => {
                     </TableCell>
                     <TableCell>{item.sold}</TableCell>
                     <TableCell>{item.revenue}</TableCell>
-                    <TableCell className="text-right">{item.status}</TableCell>
+                    <TableCell
+                      className={clsx(
+                        item.status === "Low Stock"
+                          ? "text-orange-600 bg-orange-100"
+                          : item.status === "In Stock"
+                          ? "text-green-600 bg-green-100"
+                          : "text-red-600 bg-red-100",
+                        "text-right"
+                      )}
+                    >
+                      {item.status}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

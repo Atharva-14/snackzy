@@ -30,12 +30,12 @@ const items = [
   },
   {
     title: "Products",
-    url: "#products",
+    url: "/vendor/products",
     icon: Package2,
   },
   {
     title: "Orders",
-    url: "#orders",
+    url: "/vendor/orders",
     icon: ShoppingCart,
   },
   {

@@ -6,6 +6,40 @@
   @apply bg-[#f6f9d6];
 } */
 
+/* Works on Chrome, Edge, Safari */
+/* ::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+} */
+
+/* Firefox */
+/* * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+} */
+
+/* For Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: none;
+}
 
 @layer base {
   :root {
@@ -40,6 +74,10 @@
     --destructive: 0 84.2% 60.2%;
 
     --destructive-foreground: 0 0% 98%;
+
+    --warning: 42 96% 55%;
+
+    --warning-foreground: 0 0% 10%;
 
     --border: 0 0% 89.8%;
 
