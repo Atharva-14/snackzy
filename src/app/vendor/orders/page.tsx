@@ -1,320 +1,634 @@
 "use client";
 
-import * as React from "react";
+import { useEffect, useState } from "react";
+import { DataTable } from "./data-table";
+import { columns, Order } from "./columns";
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  ChevronsUp,
+  Clock,
+  Settings,
+  ShoppingCart,
+  Truck,
+  Undo,
+} from "lucide-react";
 
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
-  },
-];
-
-export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
-export const columns: ColumnDef<Payment>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown />
-        </Button>
-      );
+async function getData(): Promise<Order[]> {
+  // Fetch data from your API here.
+  return [
+    {
+      id: "ORD001",
+      customer: {
+        name: "John Doe",
+        email: "john.doe@example.com",
+        phone: "+91 9876543210",
+        address: "123, Green Street, New Delhi, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P001",
+            name: "Potato Chips (Large)",
+            category: "snacks",
+            stock: "50",
+            expiryDate: "2025-04-02",
+            discount: 30,
+            img: "chips.jpg",
+          },
+          quantity: 3,
+        },
+      ],
+      totalAmount: 210,
+      paymentStatus: "paid",
+      orderStatus: "pending",
+      createdAt: "2025-03-28T10:30:00Z",
+      updatedAt: "2025-03-28T10:30:00Z",
+      deliveryMethod: "shipping",
+      expiryPriority: "high",
+      notes: "Deliver before 6 PM",
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
+    {
+      id: "ORD002",
+      customer: {
+        name: "Jane Smith",
+        email: "jane.smith@example.com",
+        phone: "+91 9988776655",
+        address: "456, Blue Lane, Mumbai, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P002",
+            name: "Cold Drink (500ml)",
+            category: "beverages",
+            stock: "30",
+            expiryDate: "2025-04-08",
+            discount: 20,
+            img: "drink.jpg",
+          },
+          quantity: 5,
+        },
+      ],
+      totalAmount: 500,
+      paymentStatus: "cod",
+      orderStatus: "processing",
+      createdAt: "2025-03-27T14:00:00Z",
+      updatedAt: "2025-03-28T12:00:00Z",
+      deliveryMethod: "pickup",
+      expiryPriority: "medium",
     },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+    {
+      id: "ORD003",
+      customer: {
+        name: "Mark Lee",
+        email: "mark.lee@example.com",
+        phone: "+91 9123456789",
+        address: "789, Yellow Road, Bangalore, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P003",
+            name: "Chocolate Bar (Dark)",
+            category: "chocolates",
+            stock: "100",
+            expiryDate: "2025-04-15",
+            discount: 10,
+            img: "chocolate.jpg",
+          },
+          quantity: 2,
+        },
+      ],
+      totalAmount: 180,
+      paymentStatus: "paid",
+      orderStatus: "shipped",
+      createdAt: "2025-03-26T08:45:00Z",
+      updatedAt: "2025-03-28T09:30:00Z",
+      deliveryMethod: "shipping",
+      expiryPriority: "low",
     },
-  },
-];
-
-export function DataTableDemo() {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-
-  const table = useReactTable({
-    data,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
+    {
+      id: "ORD004",
+      customer: {
+        name: "Sarah Connor",
+        email: "sarah.connor@example.com",
+        phone: "+91 9876543211",
+        address: "112, Terminator Street, Chennai, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P004",
+            name: "Ice Cream (Vanilla, 500ml)",
+            category: "icecream",
+            stock: "25",
+            expiryDate: "2025-04-04",
+            discount: 40,
+            img: "icecream.jpg",
+          },
+          quantity: 2,
+        },
+      ],
+      totalAmount: 300,
+      paymentStatus: "paid",
+      orderStatus: "delivered",
+      createdAt: "2025-03-25T12:20:00Z",
+      updatedAt: "2025-03-27T15:45:00Z",
+      deliveryMethod: "shipping",
+      expiryPriority: "high",
     },
-  });
-
-  return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
+    {
+      id: "ORD005",
+      customer: {
+        name: "Amit Kumar",
+        email: "amit.kumar@example.com",
+        phone: "+91 9234567890",
+        address: "321, Tech Park, Pune, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P005",
+            name: "Orange Juice (1L)",
+            category: "beverages",
+            stock: "40",
+            expiryDate: "2025-04-10",
+            discount: 25,
+            img: "juice.jpg",
+          },
+          quantity: 4,
+        },
+      ],
+      totalAmount: 800,
+      paymentStatus: "cod",
+      orderStatus: "pending",
+      createdAt: "2025-03-24T09:00:00Z",
+      updatedAt: "2025-03-24T10:15:00Z",
+      deliveryMethod: "pickup",
+      expiryPriority: "medium",
+    },
+    {
+      id: "ORD006",
+      customer: {
+        name: "Neha Sharma",
+        email: "neha.sharma@example.com",
+        phone: "+91 9345678901",
+        address: "999, Fashion Street, Kolkata, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P006",
+            name: "Salted Peanuts (200g)",
+            category: "snacks",
+            stock: "60",
+            expiryDate: "2025-04-12",
+            discount: 15,
+            img: "peanuts.jpg",
+          },
+          quantity: 1,
+        },
+      ],
+      totalAmount: 120,
+      paymentStatus: "paid",
+      orderStatus: "processing",
+      createdAt: "2025-03-23T15:30:00Z",
+      updatedAt: "2025-03-24T14:00:00Z",
+      deliveryMethod: "shipping",
+      expiryPriority: "low",
+    },
+    {
+      id: "ORD007",
+      customer: {
+        name: "Rahul Singh",
+        email: "rahul.singh@example.com",
+        phone: "+91 9456789012",
+        address: "777, Metro Road, Hyderabad, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P007",
+            name: "Mango Ice Cream (500ml)",
+            category: "icecream",
+            stock: "20",
+            expiryDate: "2025-04-05",
+            discount: 35,
+            img: "mango-icecream.jpg",
+          },
+          quantity: 3,
+        },
+      ],
+      totalAmount: 450,
+      paymentStatus: "cod",
+      orderStatus: "shipped",
+      createdAt: "2025-03-22T17:10:00Z",
+      updatedAt: "2025-03-24T11:20:00Z",
+      deliveryMethod: "pickup",
+      expiryPriority: "high",
+    },
+    {
+      id: "ORD008",
+      customer: {
+        name: "Priya Kapoor",
+        email: "priya.kapoor@example.com",
+        phone: "+91 9567890123",
+        address: "666, Lotus Enclave, Jaipur, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P008",
+            name: "Dark Chocolate Cookies",
+            category: "chocolates",
+            stock: "35",
+            expiryDate: "2025-04-14",
+            discount: 10,
+            img: "cookies.jpg",
+          },
+          quantity: 2,
+        },
+      ],
+      totalAmount: 250,
+      paymentStatus: "paid",
+      orderStatus: "delivered",
+      createdAt: "2025-03-21T10:50:00Z",
+      updatedAt: "2025-03-23T14:30:00Z",
+      deliveryMethod: "shipping",
+      expiryPriority: "low",
+    },
+     {
+      id: "ORD011",
+      customer: {
+        name: "John Doe",
+        email: "john.doe@example.com",
+        phone: "+91 9876543210",
+        address: "123, Green Street, New Delhi, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P001",
+            name: "Potato Chips (Large)",
+            category: "snacks",
+            stock: "50",
+            expiryDate: "2025-04-02",
+            discount: 30,
+            img: "chips.jpg",
+          },
+          quantity: 3,
+        },
+      ],
+      totalAmount: 210,
+      paymentStatus: "paid",
+      orderStatus: "pending",
+      createdAt: "2025-03-28T10:30:00Z",
+      updatedAt: "2025-03-28T10:30:00Z",
+      deliveryMethod: "shipping",
+      expiryPriority: "high",
+      notes: "Deliver before 6 PM",
+    },
+    {
+      id: "ORD012",
+      customer: {
+        name: "Jane Smith",
+        email: "jane.smith@example.com",
+        phone: "+91 9988776655",
+        address: "456, Blue Lane, Mumbai, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P002",
+            name: "Cold Drink (500ml)",
+            category: "beverages",
+            stock: "30",
+            expiryDate: "2025-04-08",
+            discount: 20,
+            img: "drink.jpg",
+          },
+          quantity: 5,
+        },
+      ],
+      totalAmount: 500,
+      paymentStatus: "cod",
+      orderStatus: "processing",
+      createdAt: "2025-03-27T14:00:00Z",
+      updatedAt: "2025-03-28T12:00:00Z",
+      deliveryMethod: "pickup",
+      expiryPriority: "medium",
+    },
+    {
+      id: "ORD013",
+      customer: {
+        name: "Mark Lee",
+        email: "mark.lee@example.com",
+        phone: "+91 9123456789",
+        address: "789, Yellow Road, Bangalore, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P003",
+            name: "Chocolate Bar (Dark)",
+            category: "chocolates",
+            stock: "100",
+            expiryDate: "2025-04-15",
+            discount: 10,
+            img: "chocolate.jpg",
+          },
+          quantity: 2,
+        },
+      ],
+      totalAmount: 180,
+      paymentStatus: "paid",
+      orderStatus: "shipped",
+      createdAt: "2025-03-26T08:45:00Z",
+      updatedAt: "2025-03-28T09:30:00Z",
+      deliveryMethod: "shipping",
+      expiryPriority: "low",
+    },
+    {
+      id: "ORD014",
+      customer: {
+        name: "Sarah Connor",
+        email: "sarah.connor@example.com",
+        phone: "+91 9876543211",
+        address: "112, Terminator Street, Chennai, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P004",
+            name: "Ice Cream (Vanilla, 500ml)",
+            category: "icecream",
+            stock: "25",
+            expiryDate: "2025-04-04",
+            discount: 40,
+            img: "icecream.jpg",
+          },
+          quantity: 2,
+        },
+      ],
+      totalAmount: 300,
+      paymentStatus: "paid",
+      orderStatus: "delivered",
+      createdAt: "2025-03-25T12:20:00Z",
+      updatedAt: "2025-03-27T15:45:00Z",
+      deliveryMethod: "shipping",
+      expiryPriority: "high",
+    },
+    {
+      id: "ORD015",
+      customer: {
+        name: "Amit Kumar",
+        email: "amit.kumar@example.com",
+        phone: "+91 9234567890",
+        address: "321, Tech Park, Pune, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P005",
+            name: "Orange Juice (1L)",
+            category: "beverages",
+            stock: "40",
+            expiryDate: "2025-04-10",
+            discount: 25,
+            img: "juice.jpg",
+          },
+          quantity: 4,
+        },
+      ],
+      totalAmount: 800,
+      paymentStatus: "cod",
+      orderStatus: "pending",
+      createdAt: "2025-03-24T09:00:00Z",
+      updatedAt: "2025-03-24T10:15:00Z",
+      deliveryMethod: "pickup",
+      expiryPriority: "medium",
+    },
+    {
+      id: "ORD016",
+      customer: {
+        name: "Neha Sharma",
+        email: "neha.sharma@example.com",
+        phone: "+91 9345678901",
+        address: "999, Fashion Street, Kolkata, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P006",
+            name: "Salted Peanuts (200g)",
+            category: "snacks",
+            stock: "60",
+            expiryDate: "2025-04-12",
+            discount: 15,
+            img: "peanuts.jpg",
+          },
+          quantity: 1,
+        },
+      ],
+      totalAmount: 120,
+      paymentStatus: "paid",
+      orderStatus: "processing",
+      createdAt: "2025-03-23T15:30:00Z",
+      updatedAt: "2025-03-24T14:00:00Z",
+      deliveryMethod: "shipping",
+      expiryPriority: "low",
+    },
+    {
+      id: "ORD017",
+      customer: {
+        name: "Rahul Singh",
+        email: "rahul.singh@example.com",
+        phone: "+91 9456789012",
+        address: "777, Metro Road, Hyderabad, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P007",
+            name: "Mango Ice Cream (500ml)",
+            category: "icecream",
+            stock: "20",
+            expiryDate: "2025-04-05",
+            discount: 35,
+            img: "mango-icecream.jpg",
+          },
+          quantity: 3,
+        },
+      ],
+      totalAmount: 450,
+      paymentStatus: "cod",
+      orderStatus: "shipped",
+      createdAt: "2025-03-22T17:10:00Z",
+      updatedAt: "2025-03-24T11:20:00Z",
+      deliveryMethod: "pickup",
+      expiryPriority: "high",
+    },
+    {
+      id: "ORD018",
+      customer: {
+        name: "Priya Kapoor",
+        email: "priya.kapoor@example.com",
+        phone: "+91 9567890123",
+        address: "666, Lotus Enclave, Jaipur, India",
+      },
+      products: [
+        {
+          product: {
+            id: "P008",
+            name: "Dark Chocolate Cookies",
+            category: "chocolates",
+            stock: "35",
+            expiryDate: "2025-04-14",
+            discount: 10,
+            img: "cookies.jpg",
+          },
+          quantity: 2,
+        },
+      ],
+      totalAmount: 250,
+      paymentStatus: "paid",
+      orderStatus: "delivered",
+      createdAt: "2025-03-21T10:50:00Z",
+      updatedAt: "2025-03-23T14:30:00Z",
+      deliveryMethod: "shipping",
+      expiryPriority: "low",
+    },
+  ];
 }
 
 const Page = () => {
+  const [products, setProducts] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setIsLoading(true);
+      try {
+        const data = await getData();
+        setProducts(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, []);
+
   return (
-    <div>
-      <DataTableDemo />
+    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <div className="grid auto-rows-min gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 ">
+        {/* Total Orders Today */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="flex space-between items-center">
+              <h1 className="w-full text-gray-500">Total Orders Today</h1>
+              <p className="px-1 py-2">
+                <ShoppingCart className="w-6 h-6 text-blue-600" />
+              </p>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pb-4">
+            <p className="text-2xl font-semibold">156</p>
+          </CardContent>
+          <CardFooter>
+            <p className="flex items-center text-sm font-medium text-emerald-600">
+              <ChevronsUp className="w-4 h-4" />
+              12% from yesterday
+            </p>
+          </CardFooter>
+        </Card>
+
+        {/* Pending Orders */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="flex space-between items-center">
+              <h1 className="w-full text-gray-500">Pending Orders</h1>
+              <p className="px-1 py-2">
+                <Clock className="w-6 h-6 text-orange-600" />
+              </p>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pb-4">
+            <p className="text-2xl font-semibold">43</p>
+          </CardContent>
+          <CardFooter>
+            <p className="flex text-gray-500 text-sm font-medium">
+              Needs attention
+            </p>
+          </CardFooter>
+        </Card>
+
+        {/* Processing */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="flex space-between items-center">
+              <h1 className="w-full text-gray-500">Processing</h1>
+              <p className="px-1 py-2">
+                <Settings className="w-6 h-6 text-violet-600" />
+              </p>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pb-4">
+            <p className="text-2xl font-semibold">28</p>
+          </CardContent>
+          <CardFooter>
+            <p className="flex text-gray-500 text-sm font-medium">
+              In progress
+            </p>
+          </CardFooter>
+        </Card>
+
+        {/* Shipped */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="flex space-between items-center">
+              <h1 className="w-full text-gray-500">Shipped</h1>
+              <p className="px-1 py-2">
+                <Truck className="w-6 h-6 text-green-600" />
+              </p>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pb-4">
+            <p className="text-2xl font-semibold">72</p>
+          </CardContent>
+          <CardFooter>
+            <p className="flex text-gray-500 text-sm font-medium">On the way</p>
+          </CardFooter>
+        </Card>
+
+        {/* Returned */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="flex space-between items-center">
+              <h1 className="w-full text-gray-500">Returned</h1>
+              <p className="px-1 py-2">
+                <Undo className="w-6 h-6 text-red-600" />
+              </p>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pb-4">
+            <p className="text-2xl font-semibold">13</p>
+          </CardContent>
+          <CardFooter>
+            <p className="flex text-red-500 text-sm font-medium">
+              Action required
+            </p>
+          </CardFooter>
+        </Card>
+      </div>
+
+      <DataTable columns={columns} data={products} />
     </div>
   );
 };

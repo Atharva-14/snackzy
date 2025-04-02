@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, Loader2, Plus, Search } from "lucide-react";
+import { ChevronDown, Plus, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -34,12 +34,21 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import AddNewProduct from "@/components/AddNewProduct";
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends Order, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({
+interface Order {
+  id: string;
+  customer: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+}
+
+export function DataTable<TData extends Order, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -47,6 +56,23 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+
+  const customGlobalFilter = (
+    row: { original: Order },
+    columnId: string,
+    filterValue: string
+  ): boolean => {
+    const order = row.original;
+
+    const search = String(filterValue).toLowerCase();
+
+    return (
+      order.id.toLowerCase().includes(search) ||
+      order.customer.name.toLowerCase().includes(search) ||
+      order.customer.email.toLowerCase().includes(search) ||
+      order.customer.phone.toLowerCase().includes(search)
+    );
+  };
 
   const table = useReactTable({
     data,
@@ -65,6 +91,7 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
     },
+    globalFilterFn: customGlobalFilter,
   });
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -80,45 +107,14 @@ export function DataTable<TData, TValue>({
             </Label>
             <Input
               placeholder="Search products..."
-              value={
-                (table.getColumn("name")?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) =>
-                table.getColumn("name")?.setFilterValue(event.target.value)
-              }
+              value={table.getState().globalFilter ?? ""}
+              onChange={(event) => table.setGlobalFilter(event.target.value)}
               className="max-w-sm md:w-fit pl-8"
             />
             <Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 select-none opacity-50" />
           </div>
 
           <div className="flex md:justify-between md:space-x-4">
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="">
-                  Columns <ChevronDown />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
-                      >
-                        {column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu> */}
-
             {/* Column Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -149,9 +145,9 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
 
-        <Button className="bg-blue-600" onClick={() => setIsDialogOpen(true)}>
+        {/* <Button className="bg-blue-600" onClick={() => setIsDialogOpen(true)}>
           <Plus /> Add Product
-        </Button>
+        </Button> */}
 
         <AddNewProduct
           isOpen={isDialogOpen}
@@ -202,12 +198,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  <div className="flex justify-center items-center h-full">
-                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                    <span className="ml-2 text-sm font-medium text-gray-600">
-                      Fetching data...
-                    </span>
-                  </div>
+                  No results.
                 </TableCell>
               </TableRow>
             )}
@@ -218,10 +209,13 @@ export function DataTable<TData, TValue>({
       {/* Table footer */}
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          Total No. of row(s) {table.getFilteredRowModel().rows.length}.
         </div>
         <div className="space-x-2">
+          <span className="text-sm">
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
+          </span>
           <Button
             variant="outline"
             size="sm"

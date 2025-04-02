@@ -1,6 +1,6 @@
 "use client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Package2, Plus, Search, TriangleAlert } from "lucide-react";
+import { Package2, TriangleAlert } from "lucide-react";
 import { columns, Products } from "./columns";
 import { DataTable } from "./data-table";
 import { useEffect, useState } from "react";
@@ -100,6 +100,8 @@ const Page = () => {
       }
     })();
   }, []);
+
+  
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

@@ -10,7 +10,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { cn } from "@/libs/utils";
@@ -21,6 +20,7 @@ import { Badge } from "./ui/badge";
 import { Slider } from "./ui/slider";
 import { Switch } from "./ui/switch";
 import { Textarea } from "./ui/textarea";
+import Image from "next/image";
 
 const commonProducts = [
   {
@@ -327,7 +327,7 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
         <DialogHeader>
           <DialogTitle>Add New Product</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            Make changes to your profile here. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-8 py-4">
@@ -504,10 +504,12 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
                     {/* Product Image */}
                     <CardContent className="flex justify-center p-0 md:p-6 md:pt-0">
                       {formData.img ? (
-                        <img
+                        <Image
                           src={formData.img}
                           alt={formData.name}
-                          className="h-32 w-32 object-contain rounded-md"
+                          className="object-contain rounded-md"
+                          width={128}
+                          height={128}
                         />
                       ) : (
                         <div className="h-32 w-32 bg-gray-100 rounded-md flex justify-center items-center">

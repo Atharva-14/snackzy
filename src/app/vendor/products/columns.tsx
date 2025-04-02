@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
-import exp from "constants";
 import { ArrowUpDown } from "lucide-react";
+import Image from "next/image";
 
 export type Products = {
   id: string;
@@ -45,10 +45,12 @@ export const columns: ColumnDef<Products>[] = [
     header: "Name",
     cell: ({ row }) => (
       <div className="w-max flex items-center">
-        <img
+        <Image
           src={row.original.img}
           alt={row.getValue("name")}
-          className="w-12 h-12 rounded object-cover"
+          className="rounded object-cover"
+          width={48}
+          height={48}
         />
         <div className="capitalize">{row.getValue("name")}</div>
       </div>

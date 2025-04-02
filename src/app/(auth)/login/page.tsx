@@ -93,7 +93,7 @@ const Page = () => {
 
             <LabelInputContainer className="flex-row my-2 space-y-0 space-x-1">
               <p className="text-neutral-600 text-sm max-w-sm">
-                Don't have an account?
+                Don&apos;t have an account?
               </p>
               <Link
                 href={"/signup/customer"}

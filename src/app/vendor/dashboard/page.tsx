@@ -10,7 +10,6 @@ import {
 import {
   ChartLine,
   ChevronsUp,
-  ChevronUp,
   CircleCheck,
   Clock,
   IndianRupee,

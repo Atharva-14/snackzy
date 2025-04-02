@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import Image from "next/image";
 
 interface Product {
   stock: string;
@@ -31,10 +32,12 @@ export function ProductCard({ product }: { product: Product }) {
 
       {/* Product Image */}
       <CardContent className="flex justify-center p-0 md:p-6 md:pt-0">
-        <img
+        <Image
           src={product.img}
           alt={product.name}
-          className="h-32 w-32 object-contain rounded-md"
+          className="object-contain rounded-md"
+          width={128}
+          height={128}
         />
       </CardContent>
 
