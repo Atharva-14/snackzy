@@ -50,10 +50,10 @@ export const columns: ColumnDef<Order>[] = [
       const customer = row.getValue("customer") as Order["customer"];
 
       return (
-        <div className="w-max flex flex-col">
-          <span className="font-medium capitalize">{customer.name}</span>
-          {/* <span className="text-xs text-gray-500">{customer.email}</span> */}
-          <span className="text-xs text-gray-500">{customer.phone}</span>
+        <div className="w-max flex flex-col space-y-0.5">
+          <p className="font-medium capitalize">{customer.name}</p>
+          {/* <p className="text-xs text-gray-500">{customer.email}</p> */}
+          <p className="text-xs text-gray-500">{customer.phone}</p>
         </div>
       );
     },
@@ -120,22 +120,22 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => (
       <div className="w-auto capitalize">
         {row.original.orderStatus === "pending" ? (
-          <div className="space-x-4">
-            <Button className="bg-green-500 hover:bg-green-600 text-white">
-              Accept
+          <div className="space-y-2 md:space-x-4 md:space-y-0">
+            <Button className="border-2 border-green-500 bg-transparent hover:bg-green-500 text-black hover:text-white">
+              Accept Order
             </Button>
-            <Button className="bg-red-500 hover:bg-red-600 text-white">
-              Reject
+            <Button className="border-2 border-red-500 bg-transparent hover:bg-red-500 text-black hover:text-white">
+              Reject Order
             </Button>
           </div>
         ) : row.original.orderStatus === "processing" ? (
-          <Button className="bg-blue-500 hover:bg-blue-600 text-white">
+          <Button className="border-2 border-blue-500 bg-transparent hover:bg-blue-500 text-black hover:text-white">
             Mark Shipped
           </Button>
         ) : row.original.orderStatus === "shipped" ? (
-          <div className="space-x-4">
-            <Button className="bg-gray-200 hover:bg-gray-300 text-black">
-              Track
+          <div className="space-y-2 md:space-x-4 md:space-y-0">
+            <Button className="border-2 border-gray-300 bg-transparent hover:bg-gray-300 text-black">
+              Track Order
             </Button>
             <Button className="bg-green-500 hover:bg-green-600 text-white">
               Mark Delivered
@@ -146,7 +146,7 @@ export const columns: ColumnDef<Order>[] = [
             Request Return
           </Button>
         ) : row.original.orderStatus === "returned" ? (
-          <div className="space-x-4">
+          <div className="space-y-2 md:space-x-4 md:space-y-0">
             <Button className="bg-green-500 hover:bg-green-600 text-white">
               Approve Return
             </Button>

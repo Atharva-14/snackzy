@@ -29,17 +29,58 @@ async function getData(): Promise<Order[]> {
         email: "john.doe@example.com",
         phone: "+91 9876543210",
         address: "123, Green Street, New Delhi, India",
+        // Add the appropriate amount value here
       },
       products: [
         {
           product: {
             id: "P001",
-            name: "Potato Chips (Large)",
+            amount: 123,
+            name: "Lay's Classic Salted Potato Chips",
             category: "snacks",
             stock: "50",
             expiryDate: "2025-04-02",
             discount: 30,
-            img: "chips.jpg",
+            img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-1021,ar-1021-1021,pr-true,f-auto,q-80/cms/product_variant/9a5a3c22-12a0-401c-9a79-732caa958540/Lay-s-Classic-Salted-Potato-Chips.jpeg",
+          },
+          quantity: 3,
+        },
+        {
+          product: {
+            id: "P002",
+            amount: 123,
+            name: "Coca Cola (750ml)",
+            category: "beverages",
+            stock: "50",
+            expiryDate: "2025-04-02",
+            discount: 30,
+            img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-1200,ar-1200-1200,pr-true,f-auto,q-80/cms/product_variant/e8143a5e-6cc5-45ce-ab5f-a60754dc087d/Coca-Cola-Soft-Drink.jpeg",
+          },
+          quantity: 3,
+        },
+        {
+          product: {
+            id: "P003",
+            amount: 123,
+            name: "Kellogg's Chocos Fills Double Chocolaty (250g)",
+            category: "snacks",
+            stock: "50",
+            expiryDate: "2025-04-02",
+            discount: 30,
+            img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-1200,ar-1200-1200,pr-true,f-auto,q-80/cms/product_variant/7a6a1ca4-38b9-47a0-b8d9-31c5b2b11a00/Kellogg-s-Chocos-Fills-Double-Chocolaty.jpeg",
+          },
+          quantity: 3,
+        },
+        {
+          product: {
+            id: "P004",
+            amount: 123,
+            name: "Cadbury Dairy Milk Silk (150g)",
+            category: "chocolates",
+            stock: "50",
+            expiryDate: "2025-04-02",
+            discount: 30,
+            img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-1280,ar-2000-2000,pr-true,f-auto,q-80/cms/product_variant/f48e6a34-c417-4dac-9694-ab1f51b5c87e/Cadbury-Dairy-Milk-Silk-Chocolate-Bar.jpeg",
           },
           quantity: 3,
         },
@@ -65,6 +106,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P002",
+            amount: 123,
             name: "Cold Drink (500ml)",
             category: "beverages",
             stock: "30",
@@ -95,6 +137,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P003",
+            amount: 123,
             name: "Chocolate Bar (Dark)",
             category: "chocolates",
             stock: "100",
@@ -125,6 +168,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P004",
+            amount: 123,
             name: "Ice Cream (Vanilla, 500ml)",
             category: "icecream",
             stock: "25",
@@ -155,6 +199,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P005",
+            amount: 123,
             name: "Orange Juice (1L)",
             category: "beverages",
             stock: "40",
@@ -185,6 +230,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P006",
+            amount: 123,
             name: "Salted Peanuts (200g)",
             category: "snacks",
             stock: "60",
@@ -215,6 +261,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P007",
+            amount: 123,
             name: "Mango Ice Cream (500ml)",
             category: "icecream",
             stock: "20",
@@ -245,6 +292,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P008",
+            amount: 123,
             name: "Dark Chocolate Cookies",
             category: "chocolates",
             stock: "35",
@@ -263,7 +311,7 @@ async function getData(): Promise<Order[]> {
       deliveryMethod: "shipping",
       expiryPriority: "low",
     },
-     {
+    {
       id: "ORD011",
       customer: {
         name: "John Doe",
@@ -275,6 +323,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P001",
+            amount: 123,
             name: "Potato Chips (Large)",
             category: "snacks",
             stock: "50",
@@ -306,6 +355,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P002",
+            amount: 123,
             name: "Cold Drink (500ml)",
             category: "beverages",
             stock: "30",
@@ -336,6 +386,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P003",
+            amount: 123,
             name: "Chocolate Bar (Dark)",
             category: "chocolates",
             stock: "100",
@@ -366,6 +417,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P004",
+            amount: 123,
             name: "Ice Cream (Vanilla, 500ml)",
             category: "icecream",
             stock: "25",
@@ -396,6 +448,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P005",
+            amount: 123,
             name: "Orange Juice (1L)",
             category: "beverages",
             stock: "40",
@@ -426,6 +479,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P006",
+            amount: 123,
             name: "Salted Peanuts (200g)",
             category: "snacks",
             stock: "60",
@@ -456,6 +510,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P007",
+            amount: 123,
             name: "Mango Ice Cream (500ml)",
             category: "icecream",
             stock: "20",
@@ -486,6 +541,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P008",
+            amount: 123,
             name: "Dark Chocolate Cookies",
             category: "chocolates",
             stock: "35",

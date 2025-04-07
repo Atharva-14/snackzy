@@ -28,8 +28,6 @@ export default function VendorLayout({
 
   const pageTitle = pageTitles[location] || "Dashboard";
 
-  console.log("VendorLayout location", location);
-
   return (
     <html lang="en">
       <body>

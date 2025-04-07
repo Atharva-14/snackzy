@@ -15,6 +15,7 @@ export type Products = {
   expiryDate: string;
   discount: number;
   img: string;
+  amount: number;
 };
 
 export const columns: ColumnDef<Products>[] = [
