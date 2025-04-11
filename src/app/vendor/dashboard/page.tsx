@@ -229,7 +229,7 @@ const Page = () => {
     },
     scales: {
       x: {
-        type: "category",
+        type: "category" as const,
       },
       y: {
         beginAtZero: true,

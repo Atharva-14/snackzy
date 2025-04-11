@@ -15,7 +15,7 @@ import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { cn } from "@/libs/utils";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { DatePickerWithPresets } from "./DatePickerWithPresets";
+import { DatePickerWithPresets } from "./DatePicker";
 import { Badge } from "./ui/badge";
 import { Slider } from "./ui/slider";
 import { Switch } from "./ui/switch";

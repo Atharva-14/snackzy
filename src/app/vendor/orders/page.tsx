@@ -35,7 +35,7 @@ async function getData(): Promise<Order[]> {
         {
           product: {
             id: "P001",
-            amount: 123,
+            amount: 1234,
             name: "Lay's Classic Salted Potato Chips",
             category: "snacks",
             stock: "50",
@@ -85,7 +85,7 @@ async function getData(): Promise<Order[]> {
           quantity: 3,
         },
       ],
-      totalAmount: 210,
+      totalAmount: 2210,
       paymentStatus: "paid",
       orderStatus: "pending",
       createdAt: "2025-03-28T10:30:00Z",

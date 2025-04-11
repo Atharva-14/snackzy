@@ -40,17 +40,17 @@ const items = [
   },
   {
     title: "Earnings",
-    url: "#earnings",
+    url: "/vendor/earnings",
     icon: Wallet,
   },
   {
     title: "Return & Complaints",
-    url: "#return-complaints",
+    url: "/vendor/return_complaints",
     icon: RotateCcw,
   },
   {
     title: "Settings",
-    url: "#settings",
+    url: "/vendor/settings",
     icon: Settings,
   },
 ];

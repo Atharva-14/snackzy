@@ -145,6 +145,22 @@ export function DataTable<TData extends Order, TValue>({
 
   console.log("selectedOrder", selectedOrder);
 
+  const formattedAmount = (amount: number) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  const formattedDate = (date: Date) => {
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   return (
     <div className="w-full">
       <div className="flex flex-col md:flex-row justify-between py-4 space-y-4 md:space-y-0">
@@ -306,14 +322,7 @@ export function DataTable<TData extends Order, TValue>({
                 </SheetTitle>
                 <SheetDescription className="text-xs font-medium text-gray-400">
                   {selectedOrder?.createdAt
-                    ? new Date(selectedOrder.createdAt).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                        }
-                      )
+                    ? formattedDate(new Date(selectedOrder.createdAt))
                     : "N/A"}{" "}
                   - 2:30 PM
                 </SheetDescription>
@@ -368,7 +377,7 @@ export function DataTable<TData extends Order, TValue>({
               <div className="flex justify-between items-center px-2.5 py-4 bg-gray-100 rounded-md">
                 <p className="text-base">Total Amount</p>
                 <p className="font-semibold">
-                  ₹{parseFloat(selectedOrder?.totalAmount).toFixed(2)}
+                  {formattedAmount(selectedOrder?.totalAmount ?? 0)}
                 </p>
               </div>
 
@@ -455,9 +464,13 @@ export function DataTable<TData extends Order, TValue>({
                             </p>
                           </TableCell>
                           <TableCell>{order.quantity}</TableCell>
-                          <TableCell>₹{order.product.amount}</TableCell>
                           <TableCell>
-                            ₹{order.quantity * order.product.amount}
+                            {formattedAmount(order.product.amount)}
+                          </TableCell>
+                          <TableCell>
+                            {formattedAmount(
+                              order.quantity * order.product.amount
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}

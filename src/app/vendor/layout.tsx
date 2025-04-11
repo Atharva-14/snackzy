@@ -22,7 +22,7 @@ export default function VendorLayout({
     "/vendor/products": "Products",
     "/vendor/orders": "Orders",
     "/vendor/earnings": "Earnings",
-    "/vendor/returnsAndComplaints": "Returns & Complaints",
+    "/vendor/returns_Complaints": "Returns & Complaints",
     "/vendor/settings": "Settings",
   };
 

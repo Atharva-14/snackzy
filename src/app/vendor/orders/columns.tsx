@@ -35,6 +35,14 @@ export type Order = {
   notes?: string; // Optional special instructions
 };
 
+const formattedAmount = (amount: number) => {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 2,
+  }).format(amount);
+};
+
 export const columns: ColumnDef<Order>[] = [
   {
     accessorKey: "id",
@@ -63,7 +71,7 @@ export const columns: ColumnDef<Order>[] = [
     header: "Total",
     cell: ({ row }) => (
       <div className="w-max font-medium">
-        ₹{parseFloat(row.getValue("totalAmount")).toFixed(2)}
+        {formattedAmount(row.getValue("totalAmount"))}
       </div>
     ),
   },
