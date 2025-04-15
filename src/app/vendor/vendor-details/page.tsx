@@ -3,6 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/libs/utils";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 interface VendorDetails {
@@ -14,6 +15,7 @@ interface VendorDetails {
 }
 
 const Page = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState<VendorDetails>({
     shopName: "",
     shopLicense: "",
@@ -160,6 +162,7 @@ const Page = () => {
           <button
             className="bg-gradient-to-br relative group/btn from-[#f1d47b] to-[#f7e19a] block w-full text-black rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] (--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
             type="submit"
+            onClick={() => router.push("/vendor/")}
           >
             Submit &rarr;
             <BottomGradient />
