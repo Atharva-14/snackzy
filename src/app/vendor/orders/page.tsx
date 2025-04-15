@@ -13,6 +13,7 @@ import {
 import {
   ChevronsUp,
   Clock,
+  Loader2,
   Settings,
   ShoppingCart,
   Truck,
@@ -580,6 +581,10 @@ const Page = () => {
       }
     })();
   }, []);
+
+  if (isLoading) {
+    return (<Loader2 className="w-6 h-6 animate-spin text-primary" />)
+  }
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

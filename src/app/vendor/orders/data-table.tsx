@@ -18,7 +18,6 @@ import {
   MapPin,
   Package,
   Phone,
-  Printer,
   RefreshCcw,
   Search,
   Truck,

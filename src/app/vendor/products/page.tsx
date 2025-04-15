@@ -1,6 +1,6 @@
 "use client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Package2, TriangleAlert } from "lucide-react";
+import { Loader2, Package2, TriangleAlert } from "lucide-react";
 import { columns, Products } from "./columns";
 import { DataTable } from "./data-table";
 import { useEffect, useState } from "react";
@@ -15,6 +15,7 @@ async function getData(): Promise<Products[]> {
       stock: "In Stock (50)",
       expiryDate: "2025-06-15",
       discount: 10,
+      amount: 40,
       img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-640,ar-2000-2000,pr-true,f-auto,q-80/cms/product_variant/595808a8-7204-4b09-b167-631ebd3815f7/Lay-s-Classic-Salted-Potato-Chips.jpeg",
     },
     {
@@ -24,6 +25,7 @@ async function getData(): Promise<Products[]> {
       stock: "Low Stock (10)",
       expiryDate: "2024-12-31",
       discount: 15,
+      amount: 40,
       img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-1200,ar-1200-1200,pr-true,f-auto,q-80/cms/product_variant/e8143a5e-6cc5-45ce-ab5f-a60754dc087d/Coca-Cola-Soft-Drink.jpeg",
     },
     {
@@ -33,6 +35,7 @@ async function getData(): Promise<Products[]> {
       stock: "In Stock (60)",
       expiryDate: "2024-10-05",
       discount: 15,
+      amount: 40,
       img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-1200,ar-1200-1200,pr-true,f-auto,q-80/cms/product_variant/c285a717-d886-411e-a844-a2da01186c14/Kwality-Wall-s-Cornetto-Double-Chocolate.jpeg",
     },
     {
@@ -42,6 +45,7 @@ async function getData(): Promise<Products[]> {
       stock: "Out of Stock (0)",
       expiryDate: "2025-02-20",
       discount: 20,
+      amount: 40,
       img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-1280,ar-2000-2000,pr-true,f-auto,q-80/cms/product_variant/f48e6a34-c417-4dac-9694-ab1f51b5c87e/Cadbury-Dairy-Milk-Silk-Chocolate-Bar.jpeg",
     },
     {
@@ -51,6 +55,7 @@ async function getData(): Promise<Products[]> {
       stock: "In Stock (40)",
       expiryDate: "2025-04-10",
       discount: 18,
+      amount: 40,
       img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-1100,ar-1100-1100,pr-true,f-auto,q-80/cms/product_variant/f1595b06-f739-4790-9dcb-8523055cb5fb/Cadbury-Oreo-Chocolate-Flavour-Cr-me-Sandwich-Biscuit.jpeg",
     },
     {
@@ -60,6 +65,7 @@ async function getData(): Promise<Products[]> {
       stock: "In Stock (40)",
       expiryDate: "2024-11-30",
       discount: 12,
+      amount: 40,
       img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-1200,ar-1200-1200,pr-true,f-auto,q-80/cms/product_variant/4c8b713f-1622-482d-91a8-50ee4f1f6a52/Pepsi-Soft-Drink.jpeg",
     },
     {
@@ -69,6 +75,7 @@ async function getData(): Promise<Products[]> {
       stock: "Low Stock (2)",
       expiryDate: "2024-09-25",
       discount: 18,
+      amount: 40,
       img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-1280,ar-5000-5000,pr-true,f-auto,q-80/cms/product_variant/dcbd523e-a540-40cd-819e-26488650ba51/Kwality-Wall-s-Magnum-Almond-Ice-Cream-Stick.jpeg",
     },
     {
@@ -78,6 +85,7 @@ async function getData(): Promise<Products[]> {
       stock: "In Stock (60)",
       expiryDate: "2025-07-12",
       discount: 10,
+      amount: 40,
       img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-1280,ar-2000-2000,pr-true,f-auto,q-80/cms/product_variant/534a2eac-c0db-472c-926b-a8d535324ad9/KitKat-Grand-Break-4-Fingers-Chocolate-Coated-Wafer-38-5-g-Combo.jpeg",
     },
   ];
@@ -101,7 +109,9 @@ const Page = () => {
     })();
   }, []);
 
-  
+  if (isLoading) {
+    return <Loader2 className="w-6 h-6 animate-spin text-primary" />;
+  }
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

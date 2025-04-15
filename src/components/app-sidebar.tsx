@@ -44,8 +44,8 @@ const items = [
     icon: Wallet,
   },
   {
-    title: "Return & Complaints",
-    url: "/vendor/return_complaints",
+    title: "Returns & Complaints",
+    url: "/vendor/returns_complaints",
     icon: RotateCcw,
   },
   {
