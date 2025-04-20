@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/libs/utils";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
@@ -314,7 +314,7 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
     const diffInMins = expiry.getTime() - today.getTime();
     const diffInDays = Math.ceil(diffInMins / (1000 * 60 * 60 * 24));
 
-    if (diffInDays > 30) return 0;
+    if (diffInDays > 30) return 10;
     else if (diffInDays >= 15) return 10;
     else if (diffInDays >= 7) return 20;
     else if (diffInDays >= 1) return 40;
@@ -326,9 +326,6 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
       <DialogContent className="w-[95vw] h-[95vh] max-w-none rounded-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Product</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you&apos;re done.
-          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-8 py-4">
           {/* Quick Product Add */}
@@ -364,15 +361,18 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
             </div>
           </Card>
 
+          <h2 className="text-xl font-semibold">Add Product Manually</h2>
+
           <div className="flex flex-col space-y-8 md:space-y-0 md:flex-row md:space-x-8 ">
             {/* Add Product Form */}
-            <Card className="md:w-3/4">
-              <CardHeader>
-                <CardTitle>Add Product Manually</CardTitle>
-              </CardHeader>
 
-              <CardContent>
-                <form>
+            <div className="md:w-3/4 flex flex-col gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Basic Information</CardTitle>
+                </CardHeader>
+
+                <CardContent>
                   <LabelInputContainer className="mb-4">
                     <Label className="font-base">Product Name</Label>
                     <Input
@@ -415,80 +415,132 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
                     </Label>
                     <Input id="image" name="image" type="file" required />
                   </LabelInputContainer>
-                  <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-                    <LabelInputContainer>
-                      <Label className="font-base">Stock Quantity</Label>
-                      <Input
-                        id="quantity"
-                        name="quantity"
-                        value={formData.quantity}
-                        onChange={handleChange}
-                        placeholder="Stock Quantity"
-                        type="text"
-                        required
-                      />
-                    </LabelInputContainer>
-                    <LabelInputContainer>
-                      <Label className="font-base">Price (₹)</Label>
-                      <Input
-                        id="price"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleChange}
-                        placeholder="Price"
-                        type="text"
-                        required
-                      />
-                    </LabelInputContainer>
-                  </div>
-                  <LabelInputContainer className="mb-4">
-                    <Label className="font-base">Expiry Date</Label>
-                    <DatePickerWithPresets
-                      date={formData.expiryDate}
-                      onDateChange={handleExpiryDateChange}
-                    />
-                  </LabelInputContainer>
-                  <LabelInputContainer className="mb-4">
-                    <div className="flex justify-between items-center">
-                      <Label className="font-base">Smart Discount</Label>
-                      <Badge
-                        className="bg-blue-100 text-blue-600 hover:bg-blue-100"
-                        variant="secondary"
-                      >
-                        Auto-calculated
-                      </Badge>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row space-y-0 justify-between items-center">
+                  <CardTitle className="w-fit">Batch Management</CardTitle>
+                  <Button
+                    variant="ghost"
+                    className="w-fit text-blue-600 hover:text-blue-700"
+                  >
+                    <Plus /> Add New Batch
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  <div className="p-4 rounded-lg bg-neutral-100">
+                    <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
+                      <LabelInputContainer>
+                        <Label className="font-base">Base Price (₹)</Label>
+                        <Input
+                          id="price"
+                          name="price"
+                          value={formData.price}
+                          onChange={handleChange}
+                          placeholder="Price"
+                          type="text"
+                          required
+                        />
+                      </LabelInputContainer>
+                      <LabelInputContainer>
+                        <Label className="font-base">Stock Quantity</Label>
+                        <Input
+                          id="quantity"
+                          name="quantity"
+                          value={formData.quantity}
+                          onChange={handleChange}
+                          placeholder="Stock Quantity"
+                          type="text"
+                          required
+                        />
+                      </LabelInputContainer>
                     </div>
-                    <span className="w-full flex justify-between items-center space-x-4">
-                      <Slider
-                        value={[formData.discount]} // Ensure slider value is controlled by state
-                        onValueChange={(value) => handleSliderChange(value)}
-                        min={0}
-                        max={50} // Set an appropriate max discount value
-                        step={1}
-                        className="flex-1"
-                      />
-                      <p className="min-w-[50px] text-center p-1 font-semibold text-primary">
-                        {formData.discount}%
+                    <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
+                      <LabelInputContainer>
+                        <Label className="font-base">Expiry Date</Label>
+                        <DatePickerWithPresets
+                          date={formData.expiryDate}
+                          onDateChange={handleExpiryDateChange}
+                        />
+                      </LabelInputContainer>
+                      <LabelInputContainer>
+                        <div className="flex justify-between items-center">
+                          <Label className="font-base">Smart Discount</Label>
+                          <Badge
+                            className="bg-blue-100 text-blue-600 hover:bg-blue-100"
+                            variant="secondary"
+                          >
+                            Auto-calculated
+                          </Badge>
+                        </div>
+                        <span className="w-full flex justify-between items-center space-x-4">
+                          <Slider
+                            value={[formData.discount]} // Ensure slider value is controlled by state
+                            onValueChange={(value) => handleSliderChange(value)}
+                            min={0}
+                            max={50} // Set an appropriate max discount value
+                            step={1}
+                            className="flex-1"
+                            disabled={true}
+                          />
+                          <p className="min-w-[50px] text-center p-1 font-semibold text-primary">
+                            {formData.discount}%
+                          </p>
+                        </span>
+                      </LabelInputContainer>
+                    </div>
+                    <span className="flex flex-col justify-between md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                      <p className="mt-2 text-xs font-medium text-neutral-500">
+                        Suggested discount based on expiry date
+                      </p>
+                      {/* <Button className="">
+                        <Trash2 /> Delete
+                      </Button> */}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row space-y-0 justify-between items-center">
+                  <CardTitle className="w-fit">Status & Visiblility</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <LabelInputContainer className="flex flex-row-reverse justify-between items-center space-y-0 mb-4">
+                    <Switch id="product-status" />
+                    <span>
+                      <Label
+                        htmlFor="product-status"
+                        className="text-center mt-0"
+                      >
+                        Product Status
+                      </Label>
+                      <p className="text-xs">
+                        Set whether the product is active or draft.
                       </p>
                     </span>
-                    <p className="mt-2 text-xs font-medium text-neutral-500">
-                      Suggested discount based on expiry date
-                    </p>
                   </LabelInputContainer>
                   <LabelInputContainer className="flex flex-row-reverse justify-between items-center space-y-0 mb-4">
-                    <Switch id="status" />
-                    <Label htmlFor="status" className="text-center mt-0">
-                      Product Status
-                    </Label>
+                    <Switch id="feature-product" />
+                    <span>
+                      <Label
+                        htmlFor="feature-product"
+                        className="text-center mt-0"
+                      >
+                        Featured Product
+                      </Label>
+                      <p className="text-xs">
+                        Show this product in featured section.
+                      </p>
+                    </span>
                   </LabelInputContainer>
-                </form>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Preview */}
             <Card className="md:w-1/4 h-fit">
               <CardHeader>
-                <CardTitle>Preview</CardTitle>
+                <CardTitle>Live Preview</CardTitle>
                 <CardContent className="p-0">
                   <Card className="relative p-4 shadow-none mt-4">
                     {/* Checkbox and Stock Badge */}
