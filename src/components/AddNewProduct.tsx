@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -21,6 +20,7 @@ import { Slider } from "./ui/slider";
 import { Switch } from "./ui/switch";
 import { Textarea } from "./ui/textarea";
 import Image from "next/image";
+import { ProductBatch } from "@/types/Product";
 
 const commonProducts = [
   {
@@ -261,6 +261,58 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
     discount: 0,
     status: false,
   });
+  const [batches, setBatches] = useState<Array<ProductBatch>>([]);
+  const [batchesData, setBatchesData] = useState<ProductBatch>({
+    batchId: "",
+    quantity: 0,
+    expiryDate: "",
+    basePrice: 0,
+    discount: 0,
+  });
+
+  // Update form data
+  const handleBatchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setBatchesData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle date change
+  const handleExpiryDateChange = (date: string) => {
+    const discount = calculateDiscount(date);
+    const parsedDate = date ? new Date(date) : null;
+    setBatchesData((prev) => ({
+      ...prev,
+      expiryDate: parsedDate ? parsedDate.toISOString() : "",
+      discount,
+    }));
+  };
+
+  // Handle discount (if dynamic)
+  const handleSliderChange = (value: number[]) => {
+    setBatchesData((prev: ProductBatch) => ({ ...prev, discount: value[0] }));
+  };
+
+  // Add new batch
+  const handleAddBatch = () => {
+    const newBatch = { ...batchesData, batchId: crypto.randomUUID() };
+    console.log("newBatch", newBatch);
+
+    setBatches((prev) => [...(prev || []), newBatch]);
+    setBatchesData({
+      batchId: "",
+      basePrice: 0,
+      quantity: 0,
+      expiryDate: "",
+      discount: 0,
+    });
+  };
+
+  // Delete batch
+  const handleDeleteBatch = (id: string) => {
+    setBatches((prev: Array<ProductBatch>) =>
+      prev.filter((batch: ProductBatch) => batch.batchId !== id)
+    );
+  };
 
   const totalPages = Math.ceil(commonProducts.length / itemsPerPage);
 
@@ -276,26 +328,28 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleExpiryDateChange = (date: string) => {
-    const discount = calculateDiscount(date);
-    setFormData((prev) => ({
-      ...prev,
-      expiryDate: date,
-      discount,
-    }));
-  };
+  const calculateRemainingDays = (batch: ProductBatch[]) => {
+    if (!batch || batch.length === 0) return "No date selected";
 
-  const handleSliderChange = (value: number[]) => {
-    setFormData({ ...formData, discount: value[0] });
-  };
-
-  const calculateRemainingDays = (expiryDate: string) => {
-    if (!expiryDate) return "No date selected";
-
-    const expiry = new Date(expiryDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const nearestExpiry = batch.reduce((nearest: ProductBatch | null, item) => {
+      const expiryDate = new Date(item.expiryDate);
+
+      if (
+        expiryDate >= today &&
+        (!nearest || expiryDate < new Date(nearest.expiryDate))
+      ) {
+        return item;
+      }
+
+      return nearest;
+    }, null);
+
+    if (!nearestExpiry) return "No valid expiry dates found";
+
+    const expiry = new Date(nearestExpiry.expiryDate);
     const diffInMins = expiry.getTime() - today.getTime();
     const diffInDays = Math.ceil(diffInMins / (1000 * 60 * 60 * 24));
 
@@ -417,28 +471,32 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
                   </LabelInputContainer>
                 </CardContent>
               </Card>
+
+              {/* Batch Management */}
               <Card>
                 <CardHeader className="flex flex-row space-y-0 justify-between items-center">
                   <CardTitle className="w-fit">Batch Management</CardTitle>
                   <Button
                     variant="ghost"
                     className="w-fit text-blue-600 hover:text-blue-700"
+                    onClick={handleAddBatch}
                   >
                     <Plus /> Add New Batch
                   </Button>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex flex-col gap-4">
                   <div className="p-4 rounded-lg bg-neutral-100">
                     <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
                       <LabelInputContainer>
                         <Label className="font-base">Base Price (₹)</Label>
                         <Input
-                          id="price"
-                          name="price"
-                          value={formData.price}
-                          onChange={handleChange}
+                          id="basePrice"
+                          name="basePrice"
+                          value={batchesData.basePrice}
+                          onChange={handleBatchChange}
                           placeholder="Price"
-                          type="text"
+                          type="number"
+                          className="bg-white"
                           required
                         />
                       </LabelInputContainer>
@@ -447,10 +505,11 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
                         <Input
                           id="quantity"
                           name="quantity"
-                          value={formData.quantity}
-                          onChange={handleChange}
+                          value={batchesData.quantity}
+                          onChange={handleBatchChange}
                           placeholder="Stock Quantity"
-                          type="text"
+                          type="number"
+                          className="bg-white"
                           required
                         />
                       </LabelInputContainer>
@@ -459,7 +518,7 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
                       <LabelInputContainer>
                         <Label className="font-base">Expiry Date</Label>
                         <DatePickerWithPresets
-                          date={formData.expiryDate}
+                          date={batchesData.expiryDate}
                           onDateChange={handleExpiryDateChange}
                         />
                       </LabelInputContainer>
@@ -475,7 +534,7 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
                         </div>
                         <span className="w-full flex justify-between items-center space-x-4">
                           <Slider
-                            value={[formData.discount]} // Ensure slider value is controlled by state
+                            value={[batchesData.discount]} // Ensure slider value is controlled by state
                             onValueChange={(value) => handleSliderChange(value)}
                             min={0}
                             max={50} // Set an appropriate max discount value
@@ -484,7 +543,7 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
                             disabled={true}
                           />
                           <p className="min-w-[50px] text-center p-1 font-semibold text-primary">
-                            {formData.discount}%
+                            {batchesData.discount}%
                           </p>
                         </span>
                       </LabelInputContainer>
@@ -493,13 +552,98 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
                       <p className="mt-2 text-xs font-medium text-neutral-500">
                         Suggested discount based on expiry date
                       </p>
-                      {/* <Button className="">
-                        <Trash2 /> Delete
-                      </Button> */}
                     </span>
                   </div>
+
+                  {batches &&
+                    batches.map((batch) => (
+                      <div
+                        className="p-4 rounded-lg border-2"
+                        key={batch.batchId}
+                      >
+                        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
+                          <LabelInputContainer>
+                            <Label className="font-base">Base Price (₹)</Label>
+                            <Input
+                              id="basePrice"
+                              name="basePrice"
+                              value={batch.basePrice}
+                              onChange={handleBatchChange}
+                              placeholder="Price"
+                              type="number"
+                              className="bg-white"
+                              required
+                            />
+                          </LabelInputContainer>
+                          <LabelInputContainer>
+                            <Label className="font-base">Stock Quantity</Label>
+                            <Input
+                              id="quantity"
+                              name="quantity"
+                              value={batch.quantity}
+                              onChange={handleBatchChange}
+                              placeholder="Stock Quantity"
+                              type="number"
+                              className="bg-white"
+                              required
+                            />
+                          </LabelInputContainer>
+                        </div>
+                        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
+                          <LabelInputContainer>
+                            <Label className="font-base">Expiry Date</Label>
+                            <DatePickerWithPresets
+                              date={batch.expiryDate}
+                              onDateChange={handleExpiryDateChange}
+                            />
+                          </LabelInputContainer>
+                          <LabelInputContainer>
+                            <div className="flex justify-between items-center">
+                              <Label className="font-base">
+                                Smart Discount
+                              </Label>
+                              <Badge
+                                className="bg-blue-100 text-blue-600 hover:bg-blue-100"
+                                variant="secondary"
+                              >
+                                Auto-calculated
+                              </Badge>
+                            </div>
+                            <span className="w-full flex justify-between items-center space-x-4">
+                              <Slider
+                                value={[batch.discount]} // Ensure slider value is controlled by state
+                                onValueChange={(value) =>
+                                  handleSliderChange(value)
+                                }
+                                min={0}
+                                max={50} // Set an appropriate max discount value
+                                step={1}
+                                className="flex-1"
+                                disabled={true}
+                              />
+                              <p className="min-w-[50px] text-center p-1 font-semibold text-primary">
+                                {batch.discount}%
+                              </p>
+                            </span>
+                          </LabelInputContainer>
+                        </div>
+                        <span className="flex flex-col justify-between md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                          <p className="mt-2 text-xs font-medium text-neutral-500">
+                            Suggested discount based on expiry date
+                          </p>
+
+                          <Button
+                            className=""
+                            onClick={() => handleDeleteBatch(batch.batchId)}
+                          >
+                            <Trash2 /> Delete
+                          </Button>
+                        </span>
+                      </div>
+                    ))}
                 </CardContent>
               </Card>
+
               <Card>
                 <CardHeader className="flex flex-row space-y-0 justify-between items-center">
                   <CardTitle className="w-fit">Status & Visiblility</CardTitle>
@@ -595,7 +739,7 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
                       <span className="flex mt-1.5 items-center space-x-1 text-gray-600">
                         <Clock className="w-3 h-3" />
                         <p className="text-xs">
-                          {calculateRemainingDays(formData.expiryDate)}
+                          {calculateRemainingDays(batches)}
                         </p>
                       </span>
                     </div>

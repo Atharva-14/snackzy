@@ -33,8 +33,19 @@ export function DatePickerWithPresets({
   );
 
   const handleDateChange = (date: Date | undefined) => {
-    setSelectedDate(date);
-    onDateChange(date ? date.toISOString().split("T")[0] : ""); // Store in YYYY-MM-DD format
+    if (date) {
+      // Adjust date to IST (UTC +5:30)
+      const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC +5:30 (in milliseconds)
+      const istDate = new Date(date.getTime() + istOffset);
+
+      // Format the date to YYYY-MM-DD (IST timezone)
+      const formattedDate = istDate.toISOString().split("T")[0];
+      setSelectedDate(istDate);
+      onDateChange(formattedDate);
+    } else {
+      setSelectedDate(undefined);
+      onDateChange("");
+    }
   };
 
   return (

@@ -2,7 +2,6 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
-import { Products } from "../products/columns";
 import { Button } from "@/components/ui/button";
 
 export type OrderStatus =
@@ -22,8 +21,14 @@ export type Order = {
     address: string;
   };
   products: {
-    product: Products;
+    productId: string;
+    productName: string;
+    image: string;
+    batchId: string;
     quantity: number;
+    basePrice: number;
+    discount?: number;
+    expiryDate: string;
   }[];
   totalAmount: number;
   paymentStatus: "paid" | "cod" | "failed";

@@ -53,7 +53,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Products } from "../products/columns";
 import { OrderStatus } from "./columns";
 import { cn } from "@/libs/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -64,6 +63,28 @@ interface DataTableProps<TData extends Order, TValue> {
   data: TData[];
 }
 
+// interface Order {
+//   id: string;
+//   customer: {
+//     name: string;
+//     email: string;
+//     phone: string;
+//     address: string;
+//   };
+//   products: {
+//     product: Products;
+//     quantity: number;
+//   }[];
+//   totalAmount: number;
+//   paymentStatus: "paid" | "cod" | "failed";
+//   orderStatus: OrderStatus;
+//   createdAt: string; // ISO date format
+//   updatedAt: string; // ISO date format
+//   deliveryMethod: "pickup" | "shipping";
+//   expiryPriority: "high" | "medium" | "low"; // Based on nearest expiry date
+//   notes?: string; // Optional special instructions
+// }
+
 interface Order {
   id: string;
   customer: {
@@ -73,8 +94,14 @@ interface Order {
     address: string;
   };
   products: {
-    product: Products;
+    productId: string;
+    productName: string;
+    image: string;
+    batchId: string;
     quantity: number;
+    basePrice: number;
+    discount?: number;
+    expiryDate: string;
   }[];
   totalAmount: number;
   paymentStatus: "paid" | "cod" | "failed";
@@ -449,27 +476,25 @@ export function DataTable<TData extends Order, TValue>({
                   <TableBody>
                     {selectedOrder &&
                       selectedOrder.products.map((order) => (
-                        <TableRow key={order.product.id}>
+                        <TableRow key={order.productId}>
                           <TableCell className="font-medium w-fit flex items-center">
                             <Image
-                              src={order.product.img}
-                              alt={order.product.name}
+                              src={order.image}
+                              alt={order.productName}
                               className="rounded object-cover"
                               width={48}
                               height={48}
                             />
                             <p className="capitalize truncate">
-                              {order.product.name}
+                              {order.productName}
                             </p>
                           </TableCell>
                           <TableCell>{order.quantity}</TableCell>
                           <TableCell>
-                            {formattedAmount(order.product.amount)}
+                            {formattedAmount(order.basePrice)}
                           </TableCell>
                           <TableCell>
-                            {formattedAmount(
-                              order.quantity * order.product.amount
-                            )}
+                            {formattedAmount(order.quantity * order.basePrice)}
                           </TableCell>
                         </TableRow>
                       ))}

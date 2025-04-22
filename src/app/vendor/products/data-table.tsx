@@ -32,7 +32,6 @@ import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -41,12 +40,14 @@ import {
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import AddNewProduct from "@/components/AddNewProduct";
+import { ProductBatch } from "@/types/Product";
 
 interface Batch {
   batchId: string;
   quantity: number;
   expiryDate: string;
-  discount?: number;
+  basePrice: number;
+  discount: number;
 }
 
 interface DataTableProps<TData extends { batches?: Batch[] }, TValue> {
@@ -308,38 +309,40 @@ export function DataTable<TData extends { batches?: Batch[] }, TValue>({
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {row.original.batches?.map((batch: any) => (
-                                  <TableRow key={batch.batchId}>
-                                    <TableCell className="text-center font-semibold py-1 pr-4">
-                                      #{batch.batchId}
-                                    </TableCell>
-                                    <TableCell className="text-center py-1 pr-4">
-                                      {batch.quantity}
-                                    </TableCell>
-                                    <TableCell className="text-center py-1 pr-4 text-red-600 font-medium">
-                                      {new Date(
-                                        batch.expiryDate
-                                      ).toLocaleDateString("en-US", {
-                                        year: "numeric",
-                                        month: "short",
-                                        day: "numeric",
-                                      })}
-                                    </TableCell>
-                                    <TableCell className="text-center py-1 pr-4">
-                                      {batch.discount
-                                        ? `${batch.discount}% OFF`
-                                        : "No Discount"}
-                                    </TableCell>
-                                    <TableCell className="text-center py-1 pr-4">
-                                      <Button variant="link" size="sm">
-                                        <Pencil className="w-4 h-4 mr-1" />
-                                      </Button>
-                                      <Button variant="link" size="sm">
-                                        <Trash2 className="w-4 h-4 text-red-600" />
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
+                                {row.original.batches?.map(
+                                  (batch: ProductBatch) => (
+                                    <TableRow key={batch.batchId}>
+                                      <TableCell className="text-center font-semibold py-1 pr-4">
+                                        #{batch.batchId}
+                                      </TableCell>
+                                      <TableCell className="text-center py-1 pr-4">
+                                        {batch.quantity}
+                                      </TableCell>
+                                      <TableCell className="text-center py-1 pr-4 text-red-600 font-medium">
+                                        {new Date(
+                                          batch.expiryDate
+                                        ).toLocaleDateString("en-US", {
+                                          year: "numeric",
+                                          month: "short",
+                                          day: "numeric",
+                                        })}
+                                      </TableCell>
+                                      <TableCell className="text-center py-1 pr-4">
+                                        {batch.discount
+                                          ? `${batch.discount}% OFF`
+                                          : "No Discount"}
+                                      </TableCell>
+                                      <TableCell className="text-center py-1 pr-4">
+                                        <Button variant="link" size="sm">
+                                          <Pencil className="w-4 h-4 mr-1" />
+                                        </Button>
+                                        <Button variant="link" size="sm">
+                                          <Trash2 className="w-4 h-4 text-red-600" />
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  )
+                                )}
                               </TableBody>
                             </Table>
                           </div>

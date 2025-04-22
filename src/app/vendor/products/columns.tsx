@@ -1,19 +1,12 @@
 "use client";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Products } from "@/types/Product";
 import { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
-import { ArrowUpDown, ChevronDown, Pencil, Trash } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
 
 const totalStock = (batches: { quantity: number }[]) => {
   return batches.reduce((acc, batch) => acc + batch.quantity, 0);
@@ -192,6 +185,6 @@ export const columns: ColumnDef<Products>[] = [
   {
     accessorKey: "actions",
     header: "Actions",
-    cell: ({ row }) => <div></div>,
+    cell: () => <div></div>,
   },
 ];

@@ -13,5 +13,5 @@ export type ProductBatch = {
   quantity: number;
   expiryDate: string;
   basePrice: number;
-  discount?: number;
+  discount: number;
 };
