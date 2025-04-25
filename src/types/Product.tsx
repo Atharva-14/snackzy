@@ -4,8 +4,9 @@ export type Products = {
   category: string;
   description: string;
   image: string;
-  status: "active" | "inactive";
+  status: boolean;
   batches: ProductBatch[];
+  featured: boolean;
 };
 
 export type ProductBatch = {

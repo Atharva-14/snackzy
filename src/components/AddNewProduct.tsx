@@ -20,7 +20,7 @@ import { Slider } from "./ui/slider";
 import { Switch } from "./ui/switch";
 import { Textarea } from "./ui/textarea";
 import Image from "next/image";
-import { ProductBatch } from "@/types/Product";
+import { ProductBatch, Products } from "@/types/Product";
 
 const commonProducts = [
   {
@@ -250,17 +250,6 @@ interface AddNewProductProps {
 
 const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    description: "",
-    img: "https://cdn.zeptonow.com/production/ik-seo/tr:w-640,ar-2000-2000,pr-true,f-auto,q-80/cms/product_variant/595808a8-7204-4b09-b167-631ebd3815f7/Lay-s-Classic-Salted-Potato-Chips.jpeg",
-    quantity: "",
-    price: "",
-    expiryDate: "",
-    discount: 0,
-    status: false,
-  });
   const [batches, setBatches] = useState<Array<ProductBatch>>([]);
   const [batchesData, setBatchesData] = useState<ProductBatch>({
     batchId: "",
@@ -268,6 +257,17 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
     expiryDate: "",
     basePrice: 0,
     discount: 0,
+  });
+  const [formData, setFormData] = useState<Products>({
+    id: "",
+    name: "",
+    category: "",
+    description: "",
+    image:
+      "https://cdn.zeptonow.com/production/ik-seo/tr:w-640,ar-2000-2000,pr-true,f-auto,q-80/cms/product_variant/595808a8-7204-4b09-b167-631ebd3815f7/Lay-s-Classic-Salted-Potato-Chips.jpeg",
+    status: false,
+    featured: false,
+    batches,
   });
 
   // Update form data
@@ -278,7 +278,7 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
 
   // Handle date change
   const handleExpiryDateChange = (date: string) => {
-    const discount = calculateDiscount(date);
+    const discount = calculateDiscountPercentage(date);
     const parsedDate = date ? new Date(date) : null;
     setBatchesData((prev) => ({
       ...prev,
@@ -328,6 +328,10 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleCheckChange = (name: string, checked: boolean) => {
+    setFormData((prev) => ({ ...prev, [name]: checked }));
+  };
+
   const calculateRemainingDays = (batch: ProductBatch[]) => {
     if (!batch || batch.length === 0) return "No date selected";
 
@@ -358,7 +362,7 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
       : "Date has passed";
   };
 
-  const calculateDiscount = (expiryDate: string) => {
+  const calculateDiscountPercentage = (expiryDate: string) => {
     if (!expiryDate) return 0;
 
     const expiry = new Date(expiryDate);
@@ -373,6 +377,36 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
     else if (diffInDays >= 7) return 20;
     else if (diffInDays >= 1) return 40;
     else return 0;
+  };
+
+  const getMaximumDiscount = (
+    batch: ProductBatch[],
+    propertyName: keyof ProductBatch
+  ): ProductBatch | null => {
+    if (!batch || batch.length === 0) return null;
+
+    return batch.reduce((maxObj: ProductBatch, currentObj: ProductBatch) => {
+      const currentPropertyValue = currentObj[propertyName];
+      const maxPropertyValue = maxObj[propertyName];
+
+      if (currentPropertyValue > maxPropertyValue) {
+        console.log("currentObj", currentObj);
+
+        return currentObj;
+      } else {
+        console.log("maxObj", maxObj);
+
+        return maxObj;
+      }
+    }, batch[0]);
+  };
+
+  const calculateDiscountedAmount = (batch: ProductBatch): string => {
+    if (!batch) return "NaN";
+
+    const { basePrice, discount } = batch;
+    const discountAmount: number = basePrice * (discount / 100);
+    return (basePrice - discountAmount).toFixed(2);
   };
 
   return (
@@ -650,7 +684,14 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
                 </CardHeader>
                 <CardContent>
                   <LabelInputContainer className="flex flex-row-reverse justify-between items-center space-y-0 mb-4">
-                    <Switch id="product-status" />
+                    <Switch
+                      name="status"
+                      id="status"
+                      checked={formData.status}
+                      onCheckedChange={(checked) =>
+                        handleCheckChange("status", checked)
+                      }
+                    />
                     <span>
                       <Label
                         htmlFor="product-status"
@@ -664,7 +705,14 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
                     </span>
                   </LabelInputContainer>
                   <LabelInputContainer className="flex flex-row-reverse justify-between items-center space-y-0 mb-4">
-                    <Switch id="feature-product" />
+                    <Switch
+                      name="featured"
+                      id="featured"
+                      checked={formData.featured}
+                      onCheckedChange={(checked) =>
+                        handleCheckChange("featured", checked)
+                      }
+                    />
                     <span>
                       <Label
                         htmlFor="feature-product"
@@ -682,70 +730,88 @@ const AddNewProduct: React.FC<AddNewProductProps> = ({ isOpen, onClose }) => {
             </div>
 
             {/* Preview */}
-            <Card className="md:w-1/4 h-fit">
+            <Card className="md:w-1/4 h-fit ">
               <CardHeader>
                 <CardTitle>Live Preview</CardTitle>
-                <CardContent className="p-0">
-                  <Card className="relative p-4 shadow-none mt-4">
-                    {/* Checkbox and Stock Badge */}
-                    <div className="w-full flex justify-end">
-                      <Badge
-                        variant="secondary"
-                        className="rounded text-white bg-red-500"
-                      >
-                        {formData.discount}% OFF
-                      </Badge>
-                    </div>
-
-                    {/* Product Image */}
-                    <CardContent className="flex justify-center p-0 md:p-6 md:pt-0">
-                      {formData.img ? (
-                        <Image
-                          src={formData.img}
-                          alt={formData.name}
-                          className="object-contain rounded-md"
-                          width={128}
-                          height={128}
-                        />
-                      ) : (
-                        <div className="h-32 w-32 bg-gray-100 rounded-md flex justify-center items-center">
-                          No Image
-                        </div>
-                      )}
-                    </CardContent>
-
-                    {/* Product Details */}
-                    <div className="">
-                      <h3 className="text-base truncate">
-                        {formData.name || "Product Name"}
-                      </h3>
-                      <p className="text-xs font-medium text-gray-500 capitalize mb-2">
-                        {formData.category || "Product Category"}
-                      </p>
-                      <span className="flex items-center space-x-1.5">
-                        <p className="text-lg font-semibold ">
-                          ₹
-                          {(
-                            parseFloat(formData.price) *
-                            (1 - formData.discount / 100)
-                          ).toFixed(2)}
-                        </p>
-                        {formData.discount > 0 && (
-                          <p className="text-xs text-gray-400 line-through">
-                            ₹{(parseFloat(formData.price) || 0).toFixed(2)}
-                          </p>
-                        )}
-                      </span>
-                      <span className="flex mt-1.5 items-center space-x-1 text-gray-600">
-                        <Clock className="w-3 h-3" />
-                        <p className="text-xs">
-                          {calculateRemainingDays(batches)}
-                        </p>
-                      </span>
-                    </div>
-                  </Card>
-                </CardContent>
               </CardHeader>
+              <CardContent>
+                <Card
+                  className={cn(
+                    "transition-shadow duration-300 p-6",
+                    formData.status
+                      ? "shadow-[0_0_12px_rgba(34,197,94,0.7)]" // green shadow only
+                      : ""
+                  )}
+                >
+                  {/* Checkbox and Stock Badge */}
+                  <div className="w-full flex justify-end">
+                    <Badge
+                      variant="secondary"
+                      className="text-white bg-red-500 hover:bg-red-500"
+                    >
+                      {getMaximumDiscount(batches, "discount")?.discount || 0}%
+                      OFF
+                    </Badge>
+                  </div>
+
+                  {/* Product Image */}
+                  <CardContent className="flex justify-center p-0 md:p-6 md:pt-0">
+                    {formData.image ? (
+                      <Image
+                        src={formData.image}
+                        alt={formData.name}
+                        className="object-contain rounded-md"
+                        width={128}
+                        height={128}
+                      />
+                    ) : (
+                      <div className="h-32 w-32 bg-gray-100 rounded-md flex justify-center items-center">
+                        No Image
+                      </div>
+                    )}
+                  </CardContent>
+
+                  {/* Product Details */}
+                  <div className="">
+                    <h3 className="text-base truncate">
+                      {formData.name || "Product Name"}
+                    </h3>
+                    <p className="text-xs font-medium text-gray-500 capitalize mb-2">
+                      {formData.category || "Product Category"}
+                    </p>
+                    <span className="flex items-center space-x-1.5">
+                      <p className="text-lg font-semibold ">
+                        ₹
+                        {calculateDiscountedAmount(
+                          getMaximumDiscount(batches, "discount") || {
+                            batchId: "",
+                            quantity: 0,
+                            expiryDate: "",
+                            basePrice: 0,
+                            discount: 0,
+                          }
+                        )}
+                      </p>
+                      {batches.length > 0 && (
+                        <p className="text-xs text-gray-400 line-through">
+                          ₹{getMaximumDiscount(batches, "basePrice")?.basePrice}
+                        </p>
+                      )}
+                    </span>
+                    <span className="flex mt-1.5 items-center space-x-1 text-gray-600">
+                      <Clock className="w-3 h-3" />
+                      <p className="text-xs">
+                        {calculateRemainingDays(batches)}
+                      </p>
+                    </span>
+                  </div>
+                </Card>
+                {formData.featured && (
+                  <p className="mt-2 font-semibold text-xs text-center">
+                    This product is featured.
+                  </p>
+                )}
+              </CardContent>
             </Card>
           </div>
         </div>
